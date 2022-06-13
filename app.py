@@ -1,6 +1,12 @@
 import gym
+import numpy as np
 import time
-env = gym.make("ALE/MsPacman-v5", render_mode="human")
+import random
+env = gym.make("ALE/MsPacman-v5")
+
+# print(f"Espacio de acciones: {env.action_space}")
+# print(f"Espacio de estados: {env.observation_space}")
+
 
 numEpisodes = 5
 numActions = 1000
