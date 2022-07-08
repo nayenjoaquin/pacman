@@ -21,28 +21,24 @@ def run_episode(env, values):
 env = gym.make("ALE/MsPacman-v5", obs_type="ram", full_action_space=False)
 num_states = env.observation_space.shape[0]
 num_actions = env.action_space.n
-num_episodes = 1000
 
 values = torch.rand(num_states,num_actions)
 
-best_reward=0
+with open("best_reward.pkl", 'rb') as pickle_file:
+    best_reward = pickle.load(pickle_file)
+print(f"recompensa a batir: {best_reward}")
 best_values=0
-total_rewards=[]
+better_values=False
 
-for episode in range(num_episodes):
+while not better_values:
     values = torch.rand(num_states,num_actions)
     reward = run_episode(env,values)
     if(reward>best_reward):
         best_reward=reward
         best_values=values
-    total_rewards.append(reward)
-    print(f"episode {episode}: {reward}")
-
-print(f"Recompensa promedio en {num_episodes} iteraciones: {sum(total_rewards)/num_episodes}")
-print(f"Mejor recompensa: {best_reward}")
+    print(f"recompensa obtenida: {reward}")
 
 torch.save(best_values,"q_table.pt")
-
 with open("best_reward.pkl","wb") as pkl_file:
     pickle.dump(best_reward,pkl_file)
 
@@ -53,49 +49,3 @@ for episode in range(eval_num_episodes):
     eval_total_rewards.append(reward)
 
 print(f"recompensa promedio en {eval_num_episodes} iteraciones de evaluación: {sum(eval_total_rewards)/eval_num_episodes}")
-
-
-
-
-
-# alpha = 0.9
-# gamma = 0.8
-
-# e = 1.0
-# decay = 0.1
-
-
-# episodes = 100
-# steps = 1000
-
-##qtable = np.zeros((256, 9))
-
-# for episode in range(episodes):
-#     state = env.reset()
-#     done = False
-
-#     for s in range(steps):
-#         if random.uniform(0, 1) < e:
-#             action = env.action_space.sample()
-#         else:
-#             action = min(np.argmax(qtable[state, :]), 8)
-#         new_state, reward, done, _ = env.step(action)
-
-#         qtable[state, action] = qtable[state, action] + alpha * (
-#             reward + gamma * np.max(qtable[new_state, :]) - qtable[state, action]
-#         )
-#         state = new_state
-#         if done:
-#             break
-
-#     e = np.exp(-decay * episode)
-
-# print("Agente ha sido entrenado!")
-
-# for i, q in enumerate(qtable):
-#     if q[0] == 0:
-#         print(i)
-#         break
-
-# Close the env
-env.close()
